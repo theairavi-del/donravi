@@ -145,21 +145,20 @@
             
             .iphone-grid {
                 display: grid;
-                grid-template-rows: repeat(6, auto);
+                grid-template-rows: repeat(5, auto);
                 grid-auto-flow: column;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 15px 20px;
-                padding: 20px 10px;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 25px 15px;
+                padding: 30px 20px;
                 align-content: start;
-                height: calc(100vh - 180px);
-                overflow-y: auto;
+                justify-items: center;
             }
             
             .iphone-app {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                gap: 6px;
+                gap: 8px;
                 cursor: pointer;
                 transition: transform 0.1s;
             }
@@ -169,23 +168,23 @@
             }
             
             .iphone-app-icon {
-                width: 58px;
-                height: 58px;
-                border-radius: 14px;
+                width: 70px;
+                height: 70px;
+                border-radius: 16px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 28px;
+                font-size: 32px;
                 box-shadow: 
-                    0 2px 8px rgba(0,0,0,0.3),
+                    0 3px 10px rgba(0,0,0,0.3),
                     inset 0 0.5px 0 rgba(255,255,255,0.3);
             }
             
             .iphone-app-label {
-                font-size: 11px;
+                font-size: 12px;
                 color: #fff;
                 text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-                max-width: 60px;
+                max-width: 70px;
                 text-align: center;
                 overflow: hidden;
                 text-overflow: ellipsis;
