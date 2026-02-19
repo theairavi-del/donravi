@@ -61,7 +61,6 @@
             .desktop, .menu-bar, .desktop-icons, .dock, .window {
                 display: none !important;
             }
-        }
             
             .iphone-notch {
                 position: absolute;
@@ -232,10 +231,6 @@
                 z-index: 1000;
             }
             
-            .desktop, .menu-bar, .desktop-icons, .dock, .window {
-                display: none !important;
-            }
-            
             .iphone-open-app {
                 position: fixed;
                 inset: 0;
@@ -248,11 +243,6 @@
             .iphone-open-app.active {
                 display: flex;
                 animation: slideUp 0.3s ease;
-            }
-            
-            @keyframes slideUp {
-                from { transform: translateY(100%); }
-                to { transform: translateY(0); }
             }
             
             .iphone-app-header {
