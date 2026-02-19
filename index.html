@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donravi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Desktop Background */
+        .desktop {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .desktop::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23667eea"/><stop offset="100%" style="stop-color:%23764ba2"/></linearGradient></defs><rect fill="url(%23g)" width="1920" height="1080"/></svg>');
+            background-size: cover;
+        }
+
+        /* Top Menu Bar */
+        .menu-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .apple-logo {
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .apple-logo:hover {
+            transform: scale(1.1);
+        }
+
+        .menu-item {
+            font-size: 13px;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .menu-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: white;
+        }
+
+        .menu-icon {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        .menu-icon:hover {
+            opacity: 1;
+        }
+
+        /* Desktop Icons */
+        .desktop-icons {
+            position: fixed;
+            top: 50px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .app-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .app-icon:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .app-icon:active {
+            transform: scale(0.95);
+        }
+
+        .app-icon.selected {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .icon-visual {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 6px;
+            box-shadow: 
+                0 4px 15px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-visual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+            border-radius: 14px 14px 0 0;
+        }
+
+        .icon-label {
+            font-size: 12px;
+            color: white;
+            text-align: center;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            font-weight: 500;
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Dock */
+        .dock {
+            position: fixed;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        .dock-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .dock-icon:hover {
+            transform: translateY(-8px) scale(1.2);
+            margin: 0 4px;
+        }
+
+        .dock-icon::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            width: 4px;
+            height: 4px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .dock-icon.active::after {
+            opacity: 1;
+        }
+
+        .dock-divider {
+            width: 1px;
+            height: 40px;
+            background: rgba(255,255,255,0.3);
+            margin: 0 4px;
+        }
+
+        /* Window */
+        .window {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 900px;
+            height: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 500;
+        }
+
+        .window.active {
+            display: flex;
+            animation: windowOpen 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes windowOpen {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .window-header {
+            height: 40px;
+            background: linear-gradient(to bottom, #f5f5f5, #e8e8e8);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 8px;
+            border-bottom: 1px solid #d1d1d1;
+        }
+
+        .window-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .window-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .window-btn.close { background: #ff5f57; }
+        .window-btn.min { background: #ffbd2e; }
+        .window-btn.max { background: #28c840; }
+
+        .window-title {
+            flex: 1;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .window-content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .window-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Context Menu */
+        .context-menu {
+            position: fixed;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 8px;
+            padding: 6px 0;
+            min-width: 180px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 2000;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .context-menu.active {
+            display: block;
+        }
+
+        .context-item {
+            padding: 8px 16px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .context-item:hover {
+            background: #0066ff;
+            color: white;
+        }
+
+        .context-divider {
+            height: 1px;
+            background: rgba(0,0,0,0.1);
+            margin: 6px 0;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            width: 0%;
+            background: white;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">🍎</div>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+    </div>
+
+    <!-- Desktop -->
+    <div class="desktop" id="desktop"></div>
+
+    <!-- Menu Bar -->
+    <div class="menu-bar">
+        <div class="menu-left">
+            <span class="apple-logo">🍎</span>
+            <span class="menu-item" style="font-weight: 600;">Donravi</span>
+            <span class="menu-item">File</span>
+            <span class="menu-item">Edit</span>
+            <span class="menu-item">View</span>
+            <span class="menu-item">Go</span>
+            <span class="menu-item">Window</span>
+            <span class="menu-item">Help</span>
+        </div>
+        <div class="menu-right">
+            <span id="clock"></span>
+        </div>
+    </div>
+
+    <!-- Desktop Icons -->
+    <div class="desktop-icons">
+        <div class="app-icon" onclick="openApp('divvi')">
+            <div class="icon-visual" style="background: linear-gradient(135deg, #ff6b6b, #ee5a5a);">💰</div>
+            <span class="icon-label">Divvi</span>
+        </div>
+        <div class="app-icon" onclick="openApp('sitescout')">
+            <div class="icon-visual" style="background: linear-gradient(135deg, #4ecdc4, #44a08d);">🎯</div>
+            <span class="icon-label">SiteScout</span>
+        </div>
+        <div class="app-icon" onclick="openApp('excuse')">
+            <div class="icon-visual" style="background: linear-gradient(135deg, #667eea, #764ba2);">📅</div>
+            <span class="icon-label">Excuse</span>
+        </div>
+        <div class="app-icon" onclick="openApp('jordan')">
+            <div class="icon-visual" style="background: linear-gradient(135deg, #f093fb, #f5576c);">🏄</div>
+            <span class="icon-label">Jordan 50th</span>
+        </div>
+        <div class="app-icon" onclick="openApp('portfolio')">
+            <div class="icon-visual" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">🎨</div>
+            <span class="icon-label">Portfolio</span>
+        </div>
+    </div>
+
+    <!-- Dock -->
+    <div class="dock">
+        <div class="dock-icon" onclick="openApp('divvi')" style="background: linear-gradient(135deg, #ff6b6b, #ee5a5a);" title="Divvi">💰</div>
+        <div class="dock-icon" onclick="openApp('sitescout')" style="background: linear-gradient(135deg, #4ecdc4, #44a08d);" title="SiteScout">🎯</div>
+        <div class="dock-icon" onclick="openApp('excuse')" style="background: linear-gradient(135deg, #667eea, #764ba2);" title="Excuse Calendar">📅</div>
+        <div class="dock-icon" onclick="openApp('jordan')" style="background: linear-gradient(135deg, #f093fb, #f5576c);" title="Jordan 50th">🏄</div>
+        <div class="dock-icon" onclick="openApp('portfolio')" style="background: linear-gradient(135deg, #4facfe, #00f2fe);" title="Portfolio">🎨</div>
+        <div class="dock-divider"></div>
+        <div class="dock-icon" onclick="openApp('vectra')" style="background: linear-gradient(135deg, #434343, #000000);" title="Vectra Desktop">💻</div>
+        <div class="dock-icon" onclick="openApp('github')" style="background: #24292e;" title="GitHub">🐙</div>
+    </div>
+
+    <!-- Window -->
+    <div class="window" id="appWindow">
+        <div class="window-header">
+            <div class="window-btn close" onclick="closeWindow()"></div>
+            <div class="window-btn min" onclick="minimizeWindow()"></div>
+            <div class="window-btn max" onclick="maximizeWindow()"></div>
+            <span class="window-title" id="windowTitle">App</span>
+        </div>
+        <div class="window-content">
+            <iframe id="appFrame" src=""></iframe>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu">
+        <div class="context-item" onclick="refreshDesktop()">🔄 Refresh</div>
+        <div class="context-divider"></div>
+        <div class="context-item" onclick="changeWallpaper()">🖼️ Change Wallpaper</div>
+        <div class="context-item" onclick="showAbout()">ℹ️ About Donravi</div>
+    </div>
+
+    <script>
+        const apps = {
+            divvi: { name: 'Divvi', url: 'https://theairavi-del.github.io/splitt-app/', icon: '💰' },
+            sitescout: { name: 'SiteScout', url: 'https://theairavi-del.github.io/sitescout/', icon: '🎯' },
+            excuse: { name: 'Excuse Calendar', url: 'https://theairavi-del.github.io/excuse-calendar/', icon: '📅' },
+            jordan: { name: 'Jordan 50th', url: 'https://theairavi-del.github.io/jordan-50th/', icon: '🏄' },
+            portfolio: { name: 'Portfolio', url: 'https://nicomaggioli.com/', icon: '🎨' },
+            vectra: { name: 'Vectra Desktop', url: 'https://theairavi-del.github.io/vectra-desktop/', icon: '💻' },
+            github: { name: 'GitHub', url: 'https://github.com/theairavi-del', icon: '🐙' }
+        };
+
+        let currentApp = null;
+
+        // Boot sequence
+        window.addEventListener('load', () => {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('loadingScreen').classList.add('hidden');
+                    }, 300);
+                }
+                document.getElementById('loadingProgress').style.width = progress + '%';
+            }, 150);
+        });
+
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            const date = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+            document.getElementById('clock').textContent = date + ' ' + time;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Open app
+        function openApp(appId) {
+            const app = apps[appId];
+            if (!app) return;
+
+            currentApp = appId;
+            document.getElementById('windowTitle').textContent = app.name;
+            document.getElementById('appFrame').src = app.url;
+            document.getElementById('appWindow').classList.add('active');
+
+            // Mark dock icon as active
+            document.querySelectorAll('.dock-icon').forEach(icon => {
+                icon.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Window controls
+        function closeWindow() {
+            document.getElementById('appWindow').classList.remove('active');
+            document.getElementById('appFrame').src = '';
+            document.querySelectorAll('.dock-icon').forEach(icon => {
+                icon.classList.remove('active');
+            });
+        }
+
+        function minimizeWindow() {
+            document.getElementById('appWindow').style.transform = 'translate(-50%, 100vh) scale(0.8)';
+            document.getElementById('appWindow').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('appWindow').classList.remove('active');
+                document.getElementById('appWindow').style.transform = '';
+                document.getElementById('appWindow').style.opacity = '';
+            }, 300);
+        }
+
+        function maximizeWindow() {
+            const win = document.getElementById('appWindow');
+            if (win.style.width === '100vw') {
+                win.style.width = '900px';
+                win.style.height = '600px';
+                win.style.borderRadius = '12px';
+            } else {
+                win.style.width = '100vw';
+                win.style.height = '100vh';
+                win.style.borderRadius = '0';
+            }
+        }
+
+        // Context menu
+        document.getElementById('desktop').addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            const menu = document.getElementById('contextMenu');
+            menu.style.left = e.clientX + 'px';
+            menu.style.top = e.clientY + 'px';
+            menu.classList.add('active');
+        });
+
+        document.addEventListener('click', () => {
+            document.getElementById('contextMenu').classList.remove('active');
+        });
+
+        function refreshDesktop() {
+            location.reload();
+        }
+
+        const wallpapers = [
+            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            'linear-gradient(135deg, #30cfd0 0%, #330867 100%)'
+        ];
+        let currentWallpaper = 0;
+
+        function changeWallpaper() {
+            currentWallpaper = (currentWallpaper + 1) % wallpapers.length;
+            document.querySelector('.desktop').style.background = wallpapers[currentWallpaper];
+        }
+
+        function showAbout() {
+            alert('Donravi OS v1.0\n\nA hub for all things awesome.\n\nCreated with ❤️');
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeWindow();
+            }
+        });
+    </script>
+</body>
+</html>
