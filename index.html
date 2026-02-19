@@ -145,9 +145,14 @@
             
             .iphone-grid {
                 display: grid;
+                grid-template-rows: repeat(6, auto);
+                grid-auto-flow: column;
                 grid-template-columns: repeat(4, 1fr);
-                gap: 20px;
+                gap: 15px 20px;
                 padding: 20px 10px;
+                align-content: start;
+                height: calc(100vh - 180px);
+                overflow-y: auto;
             }
             
             .iphone-app {
@@ -686,48 +691,7 @@
             </div>
         </div>
         <div class="iphone-screen">
-            <div class="iphone-grid">
-                <div class="iphone-app" onclick="openIphoneApp('divvi')">
-                    <div class="iphone-app-icon" style="background: linear-gradient(135deg, #ff6b6b, #ee5a5a);">💰</div>
-                    <span class="iphone-app-label">Divvi</span>
-                </div>
-                <div class="iphone-app" onclick="openIphoneApp('sitescout')">
-                    <div class="iphone-app-icon" style="background: linear-gradient(135deg, #4ecdc4, #44a08d);">🎯</div>
-                    <span class="iphone-app-label">SiteScout</span>
-                </div>
-                <div class="iphone-app" onclick="openIphoneApp('excuse')">
-                    <div class="iphone-app-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">📅</div>
-                    <span class="iphone-app-label">Excuse</span>
-                </div>
-                <div class="iphone-app" onclick="openIphoneApp('jordan')">
-                    <div class="iphone-app-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">🏄</div>
-                    <span class="iphone-app-label">Jordan</span>
-                </div>
-                <div class="iphone-app" onclick="openIphoneApp('portfolio')">
-                    <div class="iphone-app-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">🎨</div>
-                    <span class="iphone-app-label">Portfolio</span>
-                </div>
-                <div class="iphone-app" onclick="openIphoneApp('donravi')">
-                    <div class="iphone-app-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">🍎</div>
-                    <span class="iphone-app-label">Donravi</span>
-                </div>
-                <div class="iphone-app" onclick="openIphoneApp('vectra')">
-                    <div class="iphone-app-icon" style="background: linear-gradient(135deg, #434343, #000000);">💻</div>
-                    <span class="iphone-app-label">Vectra</span>
-                </div>
-                <div class="iphone-app" onclick="openIphoneApp('eargear')">
-                    <div class="iphone-app-icon" style="background: linear-gradient(135deg, #1a1a1a, #333);">🎧</div>
-                    <span class="iphone-app-label">EarGear</span>
-                </div>
-                <div class="iphone-app" onclick="openIphoneApp('culinary')">
-                    <div class="iphone-app-icon" style="background: linear-gradient(135deg, #11998e, #38ef7d);">🌍</div>
-                    <span class="iphone-app-label">Culinary</span>
-                </div>
-                <div class="iphone-app" onclick="openIphoneApp('briefing')">
-                    <div class="iphone-app-icon" style="background: linear-gradient(135deg, #fc4a1a, #f7b733);">📊</div>
-                    <span class="iphone-app-label">Briefing</span>
-                </div>
-            </div>
+            <div class="iphone-grid" id="iphoneGrid"></div>
         </div>
         <div class="iphone-dock">
             <div class="iphone-dock-app" onclick="openIphoneApp('divvi')" style="background: linear-gradient(135deg, #ff6b6b, #ee5a5a);">💰</div>
@@ -857,11 +821,59 @@
             donravi: { name: 'Donravi', url: 'https://theairavi-del.github.io/donravi/', icon: '🍎' },
             github: { name: 'GitHub', url: 'https://github.com/theairavi-del', icon: '🐙' }
         };
+        
+        // App order for iPhone grid (max 6 rows = 24 apps)
+        const iphoneAppOrder = [
+            'divvi', 'sitescout', 'excuse', 'jordan',
+            'portfolio', 'eargear', 'culinary', 'briefing',
+            'vectra', 'donravi', 'github'
+        ];
 
         let currentApp = null;
         let currentIphoneApp = null;
 
         // iPhone App Functions
+        function renderIphoneApps() {
+            const grid = document.getElementById('iphoneGrid');
+            if (!grid) return;
+            
+            const gradients = [
+                'linear-gradient(135deg, #ff6b6b, #ee5a5a)',
+                'linear-gradient(135deg, #4ecdc4, #44a08d)',
+                'linear-gradient(135deg, #667eea, #764ba2)',
+                'linear-gradient(135deg, #f093fb, #f5576c)',
+                'linear-gradient(135deg, #4facfe, #00f2fe)',
+                'linear-gradient(135deg, #fa709a, #fee140)',
+                'linear-gradient(135deg, #434343, #000000)',
+                'linear-gradient(135deg, #1a1a1a, #333)',
+                'linear-gradient(135deg, #11998e, #38ef7d)',
+                'linear-gradient(135deg, #fc4a1a, #f7b733)',
+                'linear-gradient(135deg, #24292e, #000000)'
+            ];
+            
+            iphoneAppOrder.forEach((appId, index) => {
+                const app = apps[appId];
+                if (!app) return;
+                
+                const appDiv = document.createElement('div');
+                appDiv.className = 'iphone-app';
+                appDiv.onclick = () => openIphoneApp(appId);
+                
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'iphone-app-icon';
+                iconDiv.style.background = gradients[index % gradients.length];
+                iconDiv.textContent = app.icon;
+                
+                const label = document.createElement('span');
+                label.className = 'iphone-app-label';
+                label.textContent = app.name;
+                
+                appDiv.appendChild(iconDiv);
+                appDiv.appendChild(label);
+                grid.appendChild(appDiv);
+            });
+        }
+        
         function openIphoneApp(appId) {
             const app = apps[appId];
             if (!app) return;
@@ -886,6 +898,9 @@
 
         // Boot sequence
         window.addEventListener('load', () => {
+            // Render iPhone apps
+            renderIphoneApps();
+            
             let progress = 0;
             const interval = setInterval(() => {
                 progress += Math.random() * 15;
