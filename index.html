@@ -40,17 +40,28 @@
 
         /* iPhone Mobile Styles */
         @media (max-width: 768px) {
-            body {
-                background: #000;
+            html, body {
+                background: #000 !important;
+                overflow: hidden;
+            }
+            
+            .loading-screen {
+                background: #000 !important;
             }
             
             .iphone-frame {
                 position: fixed;
                 inset: 0;
-                display: flex;
+                display: flex !important;
                 flex-direction: column;
                 background: #000;
+                z-index: 1;
             }
+            
+            .desktop, .menu-bar, .desktop-icons, .dock, .window {
+                display: none !important;
+            }
+        }
             
             .iphone-notch {
                 position: absolute;
@@ -620,12 +631,13 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            transition: opacity 0.5s, visibility 0.5s;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
         }
 
         .loading-screen.hidden {
             opacity: 0;
             visibility: hidden;
+            pointer-events: none;
         }
 
         .loading-logo {
@@ -873,18 +885,8 @@
 
         // Clock - updates both desktop and iPhone
         function updateClock() {
-            const now = new Date();
-            const time = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-            const date = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
-            const iphoneTime = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
-            
-            document.getElementById('clock').textContent = date + ' ' + time;
             document.getElementById('iphoneTime').textContent = iphoneTime;
         }
-            const now = new Date();
-            const time = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-            const date = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
-            document.getElementById('clock').textContent = date + ' ' + time;
         }
         setInterval(updateClock, 1000);
         updateClock();
