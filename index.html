@@ -912,8 +912,16 @@
 
         // Clock - updates both desktop and iPhone
         function updateClock() {
-            document.getElementById('iphoneTime').textContent = iphoneTime;
-        }
+            const now = new Date();
+            const time = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            const date = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+            const iphoneTime = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: false });
+            
+            const clockEl = document.getElementById('clock');
+            const iphoneTimeEl = document.getElementById('iphoneTime');
+            
+            if (clockEl) clockEl.textContent = date + ' ' + time;
+            if (iphoneTimeEl) iphoneTimeEl.textContent = iphoneTime;
         }
         setInterval(updateClock, 1000);
         updateClock();
