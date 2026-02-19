@@ -729,6 +729,14 @@
                     <div class="iphone-app-icon" style="background: linear-gradient(135deg, #1a1a1a, #333);">🎧</div>
                     <span class="iphone-app-label">EarGear</span>
                 </div>
+                <div class="iphone-app" onclick="openIphoneApp('culinary')">
+                    <div class="iphone-app-icon" style="background: linear-gradient(135deg, #11998e, #38ef7d);">🌍</div>
+                    <span class="iphone-app-label">Culinary</span>
+                </div>
+                <div class="iphone-app" onclick="openIphoneApp('briefing')">
+                    <div class="iphone-app-icon" style="background: linear-gradient(135deg, #fc4a1a, #f7b733);">📊</div>
+                    <span class="iphone-app-label">Briefing</span>
+                </div>
             </div>
         </div>
         <div class="iphone-dock">
@@ -793,6 +801,22 @@
             <div class="icon-visual" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">🎨</div>
             <span class="icon-label">Portfolio</span>
         </div>
+        <div class="app-icon" onclick="openApp('eargear')">
+            <div class="icon-visual" style="background: linear-gradient(135deg, #1a1a1a, #333);">🎧</div>
+            <span class="icon-label">EarGear</span>
+        </div>
+        <div class="app-icon" onclick="openApp('culinary')">
+            <div class="icon-visual" style="background: linear-gradient(135deg, #11998e, #38ef7d);">🌍</div>
+            <span class="icon-label">Culinary Atlas</span>
+        </div>
+        <div class="app-icon" onclick="openApp('briefing')">
+            <div class="icon-visual" style="background: linear-gradient(135deg, #fc4a1a, #f7b733);">📊</div>
+            <span class="icon-label">Briefing</span>
+        </div>
+        <div class="app-icon" onclick="openApp('vectra')">
+            <div class="icon-visual" style="background: linear-gradient(135deg, #434343, #000000);">💻</div>
+            <span class="icon-label">Vectra</span>
+        </div>
     </div>
 
     <!-- Dock -->
@@ -802,8 +826,9 @@
         <div class="dock-icon" onclick="openApp('excuse')" style="background: linear-gradient(135deg, #667eea, #764ba2);" title="Excuse Calendar">📅</div>
         <div class="dock-icon" onclick="openApp('jordan')" style="background: linear-gradient(135deg, #f093fb, #f5576c);" title="Jordan 50th">🏄</div>
         <div class="dock-icon" onclick="openApp('portfolio')" style="background: linear-gradient(135deg, #4facfe, #00f2fe);" title="Portfolio">🎨</div>
+        <div class="dock-icon" onclick="openApp('eargear')" style="background: linear-gradient(135deg, #1a1a1a, #333);" title="EarGear">🎧</div>
         <div class="dock-divider"></div>
-        <div class="dock-icon" onclick="openApp('vectra')" style="background: linear-gradient(135deg, #434343, #000000);" title="Vectra Desktop">💻</div>
+        <div class="dock-icon" onclick="openApp('vectra')" style="background: linear-gradient(135deg, #434343, #000000);" title="Vectra">💻</div>
         <div class="dock-icon" onclick="openApp('github')" style="background: #24292e;" title="GitHub">🐙</div>
     </div>
 
@@ -832,11 +857,13 @@
         const apps = {
             divvi: { name: 'Divvi', url: 'https://theairavi-del.github.io/splitt-app/', icon: '💰' },
             sitescout: { name: 'SiteScout', url: 'https://theairavi-del.github.io/sitescout/', icon: '🎯' },
-            excuse: { name: 'Excuse Calendar', url: 'https://theairavi-del.github.io/excuse-calendar/', icon: '📅' },
+            excuse: { name: 'Excuse', url: 'https://theairavi-del.github.io/excuse-calendar/', icon: '📅' },
             jordan: { name: 'Jordan 50th', url: 'https://theairavi-del.github.io/jordan-50th/', icon: '🏄' },
             portfolio: { name: 'Portfolio', url: 'https://nicomaggioli.com/', icon: '🎨' },
-            vectra: { name: 'Vectra Desktop', url: 'https://theairavi-del.github.io/vectra-desktop/', icon: '💻' },
             eargear: { name: 'EarGear', url: 'https://theairavi-del.github.io/eargear/', icon: '🎧' },
+            culinary: { name: 'Culinary', url: 'https://theairavi-del.github.io/culinary-atlas/', icon: '🌍' },
+            briefing: { name: 'Briefing', url: 'https://theairavi-del.github.io/briefing-dashboard/', icon: '📊' },
+            vectra: { name: 'Vectra', url: 'https://theairavi-del.github.io/vectra-desktop/', icon: '💻' },
             donravi: { name: 'Donravi', url: 'https://theairavi-del.github.io/donravi/', icon: '🍎' },
             github: { name: 'GitHub', url: 'https://github.com/theairavi-del', icon: '🐙' }
         };
