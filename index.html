@@ -138,20 +138,58 @@
             
             .iphone-screen {
                 flex: 1;
-                overflow-y: auto;
-                padding: 20px;
-                -webkit-overflow-scrolling: touch;
+                position: relative;
+                overflow: hidden;
             }
             
-            .iphone-grid {
+            .iphone-pages-container {
+                display: flex;
+                height: 100%;
+                overflow-x: scroll;
+                scroll-snap-type: x mandatory;
+                scroll-behavior: smooth;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            
+            .iphone-pages-container::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .iphone-page {
+                flex: 0 0 100%;
+                width: 100%;
+                height: 100%;
+                scroll-snap-align: start;
                 display: grid;
-                grid-template-rows: repeat(5, auto);
-                grid-auto-flow: column;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 25px 15px;
-                padding: 30px 20px;
-                align-content: start;
-                justify-items: center;
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: repeat(6, 1fr);
+                gap: 0;
+                padding: 50px 22px 30px;
+                box-sizing: border-box;
+            }
+            
+            .iphone-page-dots {
+                position: absolute;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                gap: 8px;
+                z-index: 10;
+            }
+            
+            .page-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.3);
+                transition: background 0.3s;
+            }
+            
+            .page-dot.active {
+                background: rgba(255,255,255,0.9);
             }
             
             .iphone-app {
@@ -168,15 +206,15 @@
             }
             
             .iphone-app-icon {
-                width: 70px;
-                height: 70px;
-                border-radius: 16px;
+                width: 60px;
+                height: 60px;
+                border-radius: 14px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 32px;
+                font-size: 28px;
                 box-shadow: 
-                    0 3px 10px rgba(0,0,0,0.3),
+                    0 2px 8px rgba(0,0,0,0.3),
                     inset 0 0.5px 0 rgba(255,255,255,0.3);
             }
             
@@ -692,7 +730,8 @@
             </div>
         </div>
         <div class="iphone-screen">
-            <div class="iphone-grid" id="iphoneGrid"></div>
+            <div class="iphone-pages-container" id="iphonePages"></div>
+            <div class="iphone-page-dots" id="pageDots"></div>
         </div>
         <div class="iphone-dock">
             <div class="iphone-dock-app" onclick="openIphoneApp('divvi')" style="background: linear-gradient(135deg, #ff6b6b, #ee5a5a);">💰</div>
@@ -786,12 +825,14 @@
             github: { name: 'GitHub', url: 'https://github.com/theairavi-del', icon: '🐙' }
         };
         
-        // App order for iPhone grid (max 6 rows = 24 apps)
+        // App order for iPhone grid (24 apps per page = 4x6 grid)
         const iphoneAppOrder = [
             'divvi', 'sitescout', 'excuse', 'jordan',
             'portfolio', 'eargear', 'culinary', 'briefing',
             'vectra', 'donravi', 'github'
         ];
+        
+        const APPS_PER_PAGE = 24; // 4 columns x 6 rows
         
         // Desktop app order (flows in columns, 6 per column)
         const desktopAppOrder = [
@@ -804,8 +845,9 @@
 
         // iPhone App Functions
         function renderIphoneApps() {
-            const grid = document.getElementById('iphoneGrid');
-            if (!grid) return;
+            const container = document.getElementById('iphonePages');
+            const dotsContainer = document.getElementById('pageDots');
+            if (!container || !dotsContainer) return;
             
             const gradients = [
                 'linear-gradient(135deg, #ff6b6b, #ee5a5a)',
@@ -821,26 +863,59 @@
                 'linear-gradient(135deg, #24292e, #000000)'
             ];
             
-            iphoneAppOrder.forEach((appId, index) => {
-                const app = apps[appId];
-                if (!app) return;
+            // Calculate number of pages needed
+            const totalPages = Math.ceil(iphoneAppOrder.length / APPS_PER_PAGE);
+            
+            // Create dots
+            for (let i = 0; i < totalPages; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'page-dot' + (i === 0 ? ' active' : '');
+                dotsContainer.appendChild(dot);
+            }
+            
+            // Create pages
+            for (let page = 0; page < totalPages; page++) {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'iphone-page';
                 
-                const appDiv = document.createElement('div');
-                appDiv.className = 'iphone-app';
-                appDiv.onclick = () => openIphoneApp(appId);
+                const startIdx = page * APPS_PER_PAGE;
+                const endIdx = Math.min(startIdx + APPS_PER_PAGE, iphoneAppOrder.length);
                 
-                const iconDiv = document.createElement('div');
-                iconDiv.className = 'iphone-app-icon';
-                iconDiv.style.background = gradients[index % gradients.length];
-                iconDiv.textContent = app.icon;
+                for (let i = startIdx; i < endIdx; i++) {
+                    const appId = iphoneAppOrder[i];
+                    const app = apps[appId];
+                    if (!app) continue;
+                    
+                    const appDiv = document.createElement('div');
+                    appDiv.className = 'iphone-app';
+                    appDiv.onclick = () => openIphoneApp(appId);
+                    
+                    const iconDiv = document.createElement('div');
+                    iconDiv.className = 'iphone-app-icon';
+                    iconDiv.style.background = gradients[i % gradients.length];
+                    iconDiv.textContent = app.icon;
+                    
+                    const label = document.createElement('span');
+                    label.className = 'iphone-app-label';
+                    label.textContent = app.name;
+                    
+                    appDiv.appendChild(iconDiv);
+                    appDiv.appendChild(label);
+                    pageDiv.appendChild(appDiv);
+                }
                 
-                const label = document.createElement('span');
-                label.className = 'iphone-app-label';
-                label.textContent = app.name;
+                container.appendChild(pageDiv);
+            }
+            
+            // Add scroll listener for page dots
+            container.addEventListener('scroll', () => {
+                const scrollLeft = container.scrollLeft;
+                const pageWidth = container.offsetWidth;
+                const currentPage = Math.round(scrollLeft / pageWidth);
                 
-                appDiv.appendChild(iconDiv);
-                appDiv.appendChild(label);
-                grid.appendChild(appDiv);
+                document.querySelectorAll('.page-dot').forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === currentPage);
+                });
             });
         }
         
